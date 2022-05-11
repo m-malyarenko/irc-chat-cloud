@@ -1,0 +1,35 @@
+---
+- name: IRC chat server
+  hosts: webservers
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+    - name: Install inspircd
+      apt:
+        name: inspircd
+        update_cache: true
+    - name: IRC server config
+      copy:
+        src: ../inspircd/inspircd.conf
+        dest: /etc/inspircd/inspircd.conf
+    - name: IRC server start message
+      copy:
+        src: ../inspircd/inspircd.motd
+        dest: /etc/inspircd/inspircd.motd
+    - name: Change IRC server config mod
+      file:
+        dest: /etc/inspircd/
+        owner: root
+        mode: 0777
+        recurse: yes
+    - name: Change IRC server PID mod
+      file:
+        dest: /var
+        owner: root
+        mode: 0777
+        recurse: yes
+    - name: Start IRC server
+      service:
+        name: inspircd
+        state: started
